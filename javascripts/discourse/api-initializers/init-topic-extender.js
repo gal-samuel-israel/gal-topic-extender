@@ -33,27 +33,84 @@ export default apiInitializer("0.8", (api) => {
     blockModal = (showOnlyToAdmins && !isAdmin);
 
     if(!blockModal){
-      api.reopenWidget("post-body", {
-        tagName: "div.topic-body.clearfix",
+      api.reopenWidget("post-meta-data", {
+      tagName: "div.topic-meta-data",
 
-        html(attrs, state) {
-          console.log('overridden');
-          
-          const postContents = this.attach("post-contents", attrs);
-          let result = [this.attach("post-meta-data", attrs)];
-          result = result.concat(
-            applyDecorators(this, "after-meta-data", attrs, state)
+      buildAttributes() {
+        return {
+          role: "heading",
+          "aria-level": "2",
+        };
+      },
+
+      settings: {
+        displayPosterName: true,
+      },
+
+      html(attrs) {
+
+        if(debug){ 
+          console.log('overriding');
+        }
+
+        let postInfo = [];
+
+        if (attrs.isWhisper) {
+          postInfo.push(
+            h(
+              "div.post-info.whisper",
+              {
+                attributes: { title: I18n.t("post.whisper") },
+              },
+              iconNode("far-eye-slash")
+            )
           );
-          result.push(postContents);
-          result.push(this.attach("actions-summary", attrs));
-          result.push(this.attach("post-links", attrs));
-          if (attrs.showTopicMap) {
-            result.push(this.attach("topic-map", attrs));
-          }
+        }
 
-          return result;
-        },
-      });
+        if (attrs.via_email) {
+          postInfo.push(this.attach("post-email-indicator", attrs));
+        }
+
+        if (attrs.locked) {
+          postInfo.push(this.attach("post-locked-indicator", attrs));
+        }
+
+        if (attrs.version > 1 || attrs.wiki) {
+          postInfo.push(this.attach("post-edits-indicator", attrs));
+        }
+
+        if (attrs.multiSelect) {
+          postInfo.push(this.attach("select-post", attrs));
+        }
+
+        if (showReplyTab(attrs, this.siteSettings)) {
+          postInfo.push(this.attach("reply-to-tab", attrs));
+        }
+
+        postInfo.push(this.attach("post-date", attrs));
+
+        postInfo.push(
+          h(
+            "div.read-state",
+            {
+              className: attrs.read ? "read" : null,
+              attributes: {
+                title: I18n.t("post.unread"),
+              },
+            },
+            iconNode("circle")
+          )
+        );
+
+        let result = [];
+        if (this.settings.displayPosterName) {
+          result.push(this.attach("poster-name", attrs));
+        }
+        result.push(h("div.post-infos", postInfo));
+
+        return result;
+      },
+    });
     }
 
   }  
