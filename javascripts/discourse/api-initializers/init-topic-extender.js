@@ -1,4 +1,5 @@
 import { apiInitializer } from "discourse/lib/api";
+import { applyDecorators } from "discourse/widgets/widget";
 
 export default apiInitializer("0.8", (api) => {
 
@@ -33,29 +34,29 @@ export default apiInitializer("0.8", (api) => {
 
     if(!blockModal){
       api.reopenWidget("post-body", {
-      tagName: "div.topic-body.clearfix",
+        tagName: "div.topic-body.clearfix",
 
-      html(attrs, state) {
-        console.log('overridden');
-        
-        const postContents = this.attach("post-contents", attrs);
-        let result = [this.attach("post-meta-data", attrs)];
-        result = result.concat(
-          applyDecorators(this, "after-meta-data", attrs, state)
-        );
-        result.push(postContents);
-        result.push(this.attach("actions-summary", attrs));
-        result.push(this.attach("post-links", attrs));
-        if (attrs.showTopicMap) {
-          result.push(this.attach("topic-map", attrs));
-        }
+        html(attrs, state) {
+          console.log('overridden');
+          
+          const postContents = this.attach("post-contents", attrs);
+          let result = [this.attach("post-meta-data", attrs)];
+          result = result.concat(
+            applyDecorators(this, "after-meta-data", attrs, state)
+          );
+          result.push(postContents);
+          result.push(this.attach("actions-summary", attrs));
+          result.push(this.attach("post-links", attrs));
+          if (attrs.showTopicMap) {
+            result.push(this.attach("topic-map", attrs));
+          }
 
-        return result;
-      },
-    });
-  }
+          return result;
+        },
+      });
+    }
 
-}  
+  }  
 
 });
 
