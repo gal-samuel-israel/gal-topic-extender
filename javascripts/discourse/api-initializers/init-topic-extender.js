@@ -21,7 +21,7 @@ export default apiInitializer("0.8", (api) => {
     //const user = container.lookup("service:current-user");
 
     if(debug){          
-      console.log('home-modal initializer:');
+      console.log('topic-extender initializer:');
       //console.log(user);
       //console.log(currentUser.user_option);
       console.log('admin: ' + currentUser.admin); 
