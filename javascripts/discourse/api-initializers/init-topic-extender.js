@@ -1,10 +1,8 @@
 import { apiInitializer } from "discourse/lib/api";
-import { iconNode } from "discourse-common/lib/icon-library";
-import I18n from "I18n";
 
 export default apiInitializer("0.8", (api) => {
 
-  var blockModal;  
+  var blockThisPlugin;  
 
   if (api.getCurrentUser()) {
     const currentUser = api.getCurrentUser()
@@ -17,34 +15,27 @@ export default apiInitializer("0.8", (api) => {
     }
 
     var debug4All = settings.enable_debug_for_all;
-    if(debug4All){ debug = true; }
-    
-    //const user = container.lookup("service:current-user");
-
-    if(debug){          
-      console.log('topic-extender initializer:');
-      //console.log(user);
-      //console.log(currentUser.user_option);
-      console.log('admin: ' + currentUser.admin); 
-      console.log('id: ' + currentUser.id); 
-    }
+    if(debug4All){ debug = true; }           
 
     var showOnlyToAdmins = settings.enable_modal_only_for_admins; //make this false to enable component all users
     var isAdmin = (currentUser.admin)        
-    blockModal = (showOnlyToAdmins && !isAdmin);
+    blockThisPlugin = (showOnlyToAdmins && !isAdmin);
 
-    if(!blockModal){
+    if(debug){          
+      console.log('topic-extender initializer:');      
+      console.log('admin: ', currentUser.admin); 
+      console.log('id: ', currentUser.id); 
+      console.log('blocked: ', blockThisPlugin); 
+    }
 
-      function showReplyTab(attrs, siteSettings) {
-        return (
-          attrs.replyToUsername &&
-          (!attrs.replyDirectlyAbove || !siteSettings.suppress_reply_directly_above)
-        );
-      }
+    if(!blockThisPlugin){
 
       api.reopenWidget("poster-name", {
-        html(attrs) {          
-              return this._super(attrs);          
+        html(attrs) {
+            if(debug){
+              console.log('attrs: ',attrs);
+            }
+            return this._super(attrs);          
         }
       });
     }
